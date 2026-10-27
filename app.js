@@ -1,7 +1,7 @@
 // ZAKUPY RM: środowe sprawdzanie zapasów biura, lista do kupienia, wydruk, archiwum z kwotą
 // Dane w bazie Zadań RM (Supabase, to samo logowanie). Bez config.js albo z ?proba: tryb próbny w tej przeglądarce.
 // Zakończenie zakupów robi baza jedną funkcją (setup.sql, public.zakupy_zakoncz).
-const WERSJA = 'v1';
+const WERSJA = 'v2';
 
 const KATEGORIE = ['Kuchnia', 'Chemia i higiena', 'Biuro i papier', 'Inne'];
 const JEDNOSTKI = ['szt.', 'opak.', 'kg', 'l', 'ryza', 'zgrz.', 'rolka'];
@@ -107,11 +107,27 @@ const DB = (cfg.supabaseUrl && !/[?&]proba/.test(location.search)) ? magazynSupa
 const S = { user: null, profil: null, admin: false, osoby: [], produkty: [], archiwum: [], nowy: { staly: true, kategoria: 'Kuchnia' }, koniec: { sklep: '', kwota: '', uwagi: '', kiedy: '' }, otwarty: null };
 const imie = (id) => (S.osoby.find(o => o.id === id)?.imie) || 'ktoś z zespołu';
 const doKupienia = () => S.produkty.filter(p => p.trzeba);
-// kategorie w stałej kolejności, nowe (wpisane ręcznie) na końcu przed „Inne”
+// własne kategorie: zapisują się w bazie razem z pierwszym produktem, do tego czasu pamięta je to urządzenie
+const czytajNoweKat = () => { try { return JSON.parse(localStorage.getItem('zk-kategorie')) || []; } catch (e) { return []; } };
+S.noweKat = czytajNoweKat();
+// kategorie w stałej kolejności, własne na końcu przed „Inne”
+function wszystkieKategorie() {
+  const ext = [...new Set([...S.produkty.map(p => p.kategoria), ...S.noweKat])].filter(k => k && !KATEGORIE.includes(k)).sort((a, b) => a.localeCompare(b, 'pl'));
+  return [...KATEGORIE.slice(0, -1), ...ext, 'Inne'];
+}
 function kategorie(lista) {
-  const ext = [...new Set(lista.map(p => p.kategoria))].filter(k => !KATEGORIE.includes(k)).sort((a, b) => a.localeCompare(b, 'pl'));
-  const kol = [...KATEGORIE.slice(0, -1), ...ext, 'Inne'];
-  return kol.map(k => [k, lista.filter(p => p.kategoria === k)]).filter(([, l]) => l.length);
+  return wszystkieKategorie().map(k => [k, lista.filter(p => p.kategoria === k)]).filter(([, l]) => l.length);
+}
+// zwraca nazwę kategorii (istniejącą pisownię, jeśli już jest) albo null
+function dodajKategorie(nazwa) {
+  nazwa = String(nazwa || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+  if (!nazwa) return null;
+  nazwa = nazwa[0].toUpperCase() + nazwa.slice(1);
+  const jest = wszystkieKategorie().find(k => bezOgonkow(k) === bezOgonkow(nazwa));
+  if (jest) return jest;
+  S.noweKat.push(nazwa);
+  try { localStorage.setItem('zk-kategorie', JSON.stringify(S.noweKat)); } catch (e) {}
+  return nazwa;
 }
 
 // ===================== START =====================
@@ -185,11 +201,14 @@ function rysujSprawdz() {
     ${ost ? `<div class="small muted">Ostatnie zakupy: ${dataPL(ost.kiedy)}, ${zl(ost.kwota)}${ost.sklep ? ', ' + esc(ost.sklep) : ''}</div>` : ''}`;
   $('#info-sroda').classList.toggle('sroda', sroda);
 
-  const N = S.nowy;
+  const N = S.nowy, wpisana = $('#d-kat-nowa')?.value || '';
   $('#d-opcje').innerHTML = `<button type="button" class="chip${N.staly ? ' on' : ''}" data-staly="1">📌 Na stałe</button>
     <button type="button" class="chip${!N.staly ? ' on' : ''}" data-staly="0">Tylko tym razem</button>
     <span class="chips-sep"></span>
-    ${KATEGORIE.map(k => `<button type="button" class="chip chip-mala${N.kategoria === k ? ' on' : ''}" data-kat="${esc(k)}">${esc(k)}</button>`).join('')}`;
+    ${wszystkieKategorie().map(k => `<button type="button" class="chip chip-mala${N.kategoria === k ? ' on' : ''}" data-kat="${esc(k)}">${esc(k)}</button>`).join('')}
+    ${S.nowaKat ? `<span class="nowa-kat"><input type="text" id="d-kat-nowa" maxlength="40" placeholder="nazwa kategorii" autocomplete="off"><button type="button" class="chip chip-mala on" data-kat-ok="1">Dodaj</button><button type="button" class="chip chip-mala" data-kat-anuluj="1">✕</button></span>`
+      : '<button type="button" class="chip chip-mala chip-plus" data-kat-nowa="1">＋ Nowa kategoria</button>'}`;
+  if (S.nowaKat) { $('#d-kat-nowa').value = wpisana; if (!wpisana) setTimeout(() => $('#d-kat-nowa')?.focus(), 30); }
 
   const grupy = kategorie(S.produkty);
   $('#lista').innerHTML = grupy.length ? grupy.map(([k, l]) => `<div class="sekcja-tytul">${esc(k)} <span class="muted">${l.filter(p => p.trzeba).length ? '· ' + l.filter(p => p.trzeba).length + ' do kupienia' : ''}</span></div>
@@ -210,10 +229,21 @@ $('#d-opcje').addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.staly) S.nowy.staly = b.dataset.staly === '1';
   if (b.dataset.kat) S.nowy.kategoria = b.dataset.kat;
+  if (b.dataset.katNowa) S.nowaKat = true;
+  if (b.dataset.katAnuluj) S.nowaKat = false;
+  if (b.dataset.katOk) { zatwierdzNowaKat(); return; }
   rysujSprawdz();
 });
+function zatwierdzNowaKat() {
+  const k = dodajKategorie($('#d-kat-nowa')?.value);
+  if (!k) { $('#d-kat-nowa')?.focus(); return; }
+  S.nowy.kategoria = k; S.nowaKat = false; rysujSprawdz();
+  toast(`Kategoria „${k}” wybrana, dopisz do niej produkt`, 3500);
+  $('#d-nazwa').focus();
+}
 $('#f-dodaj').addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (document.activeElement?.id === 'd-kat-nowa') { zatwierdzNowaKat(); return; }
   const nazwa = $('#d-nazwa').value.trim().replace(/\s+/g, ' ');
   if (!nazwa) { $('#d-nazwa').focus(); return; }
   const jest = S.produkty.find(p => bezOgonkow(p.nazwa) === bezOgonkow(nazwa));
@@ -385,13 +415,14 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#ark
 
 function otworzProdukt(p) { S.otwarty = { id: p.id, staly: p.staly, jednostka: p.jednostka }; rysujProdukt(p); otworzArkusz(); }
 function rysujProdukt(p, usun) {
-  const O = S.otwarty, kat = [...new Set([...KATEGORIE, ...S.produkty.map(x => x.kategoria)])];
+  const O = S.otwarty, kat = wszystkieKategorie();
   $('#ark-nr').textContent = O.staly ? '📌 Produkt stały' : 'Tylko na te zakupy';
   $('#ark-tresc').innerHTML = `<form id="f-produkt">
     <label>Nazwa <input type="text" id="e-nazwa" value="${esc(p.nazwa)}" maxlength="80" required></label>
     <div class="chips"><button type="button" class="chip${O.staly ? ' on' : ''}" data-e-staly="1">📌 Na stałe, co środę</button>
       <button type="button" class="chip${!O.staly ? ' on' : ''}" data-e-staly="0">Tylko tym razem</button></div>
-    <label>Kategoria <select id="e-kat">${kat.map(k => `<option${p.kategoria === k ? ' selected' : ''}>${esc(k)}</option>`).join('')}</select></label>
+    <label>Kategoria <select id="e-kat">${kat.map(k => `<option${p.kategoria === k ? ' selected' : ''}>${esc(k)}</option>`).join('')}<option value="__nowa__"${p.kategoria === '__nowa__' ? ' selected' : ''}>＋ Nowa kategoria…</option></select></label>
+    <label id="e-kat-nowa-box"${p.kategoria === '__nowa__' ? '' : ' hidden'}>Nazwa nowej kategorii <input type="text" id="e-kat-nowa" maxlength="40" value="${esc(p.katNowa || '')}" placeholder="np. Banery i teren"></label>
     <div class="sekcja-tytul" style="margin-top:2px">Jednostka</div>
     <div class="chips">${JEDNOSTKI.map(j => `<button type="button" class="chip chip-mala${O.jednostka === j ? ' on' : ''}" data-jedn="${esc(j)}">${esc(j)}</button>`).join('')}</div>
     <div class="grid2"><label>Ile kupić teraz <input type="text" inputmode="decimal" id="e-ile" value="${ileTxt(p.ile)}"></label>
@@ -404,7 +435,7 @@ function rysujProdukt(p, usun) {
 }
 function zapamietajProdukt() {
   const p = S.produkty.find(x => x.id === S.otwarty?.id); if (!p || !$('#f-produkt')) return null;
-  return { nazwa: $('#e-nazwa').value, kategoria: $('#e-kat').value, ile: $('#e-ile').value, ile_dom: $('#e-ile-dom')?.value ?? p.ile_domyslnie, uwagi: $('#e-uwagi').value };
+  return { nazwa: $('#e-nazwa').value, kategoria: $('#e-kat').value, katNowa: $('#e-kat-nowa').value, ile: $('#e-ile').value, ile_dom: $('#e-ile-dom')?.value ?? p.ile_domyslnie, uwagi: $('#e-uwagi').value };
 }
 $('#arkusz').addEventListener('click', async (e) => {
   const b = e.target.closest('button'); if (!b || !S.otwarty) return;
@@ -432,6 +463,9 @@ $('#arkusz').addEventListener('click', async (e) => {
     catch (err) { toast('Nie udało się: ' + err.message, 5000); }
   }
 });
+$('#arkusz').addEventListener('change', (e) => {
+  if (e.target.id === 'e-kat') { const nowa = e.target.value === '__nowa__'; $('#e-kat-nowa-box').hidden = !nowa; if (nowa) $('#e-kat-nowa').focus(); }
+});
 $('#arkusz').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (e.target.id === 'f-arch') {
@@ -447,7 +481,9 @@ $('#arkusz').addEventListener('submit', async (e) => {
   const nazwa = pola.nazwa.trim().replace(/\s+/g, ' ');
   if (!nazwa) { toast('Wpisz nazwę'); return; }
   if (!(ile > 0) || !(dom > 0)) { toast('Ilość musi być większa od zera'); return; }
-  const zm = { nazwa, kategoria: pola.kategoria, jednostka: S.otwarty.jednostka, staly: S.otwarty.staly, ile, ile_domyslnie: dom, uwagi: pola.uwagi.trim() };
+  const kategoria = pola.kategoria === '__nowa__' ? dodajKategorie(pola.katNowa) : pola.kategoria;
+  if (!kategoria) { toast('Wpisz nazwę nowej kategorii'); $('#e-kat-nowa').focus(); return; }
+  const zm = { nazwa, kategoria, jednostka: S.otwarty.jednostka, staly: S.otwarty.staly, ile, ile_domyslnie: dom, uwagi: pola.uwagi.trim() };
   if (ile !== Number(p.ile)) zm.trzeba = true;
   try { await DB.zmien(p.id, zm); Object.assign(p, zm); toast('Zapisano'); zamknijArkusz(); }
   catch (err) { toast('Nie zapisało się: ' + err.message, 5000); }

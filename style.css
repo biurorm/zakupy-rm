@@ -184,3 +184,8 @@ input:focus, select:focus { outline: 2px solid var(--brand-light); outline-offse
   .licznik span { min-width: 40px; }
   .licznik button { width: 30px; }
 }
+
+/* NOWA KATEGORIA (v2) */
+.chip-plus { border-style: dashed; color: var(--brand); }
+.nowa-kat { display: inline-flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
+.nowa-kat input { width: 160px; margin: 0; padding: 6px 10px; font-size: 15px; }
