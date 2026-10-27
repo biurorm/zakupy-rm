@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#094d47">
+  <title>Zakupy, RM Nieruchomości</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="RM Nieruchomości" class="header-logo">
+      <div class="subtitle">Zakupy</div>
+    </div>
+    <div class="header-right">
+      <span class="wersja" data-wersja title="Wersja aplikacji"></span>
+      <button class="icon-btn small-txt" id="btn-wyloguj" hidden>Wyloguj</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <!-- LOGOWANIE -->
+  <section class="screen" id="ekran-logowanie" hidden>
+    <div class="card">
+      <div class="card-title">Zaloguj się</div>
+      <p class="muted">Ten sam e-mail i hasło co w aplikacji Zadania RM.</p>
+      <form id="form-logowanie">
+        <label>E-mail <input type="email" id="log-email" autocomplete="username" autocapitalize="off" required></label>
+        <label>Hasło <input type="password" id="log-haslo" autocomplete="current-password" required></label>
+        <button class="btn btn-main" type="submit">Zaloguj</button>
+        <div class="err" id="log-blad"></div>
+      </form>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" hidden>
+    <button data-tab="sprawdz" class="on">📝 Sprawdzamy</button>
+    <button data-tab="kupuje">🛒 Do kupienia <span class="tab-ile" id="tab-ile"></span></button>
+    <button data-tab="archiwum">📦 Archiwum</button>
+  </nav>
+
+  <!-- SPRAWDZAMY (środa) -->
+  <section class="screen" id="ekran-sprawdz" hidden>
+    <div class="info" id="info-sroda"></div>
+    <form class="dodaj card" id="f-dodaj">
+      <div class="dodaj-wiersz">
+        <input type="text" id="d-nazwa" maxlength="80" placeholder="Dopisz produkt, np. kapsułki do zmywarki" autocomplete="off">
+        <button class="btn btn-main" type="submit">Dodaj</button>
+      </div>
+      <div class="chips" id="d-opcje"></div>
+    </form>
+    <div id="lista"></div>
+    <div class="pasek-dol" id="pasek-sprawdz">
+      <div class="pasek-info" id="pasek-info"></div>
+      <div class="pasek-przyciski">
+        <button class="btn btn-ghost" data-akcja="drukuj">🖨️ Drukuj listę</button>
+        <button class="btn btn-main" data-akcja="do-sklepu">🛒 Do kupienia</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DO KUPIENIA (w sklepie) -->
+  <section class="screen" id="ekran-kupuje" hidden>
+    <div id="kupuje-lista"></div>
+    <div id="kupuje-dol"></div>
+  </section>
+
+  <!-- ARCHIWUM -->
+  <section class="screen" id="ekran-archiwum" hidden>
+    <div id="archiwum-podsumowanie"></div>
+    <div id="archiwum-lista"></div>
+  </section>
+
+  <!-- KARTA PRODUKTU (wysuwana od dołu) -->
+  <div class="tlo" id="tlo" hidden></div>
+  <div class="arkusz" id="arkusz" hidden role="dialog" aria-modal="true" aria-labelledby="ark-tytul">
+    <div class="arkusz-uchwyt"></div>
+    <div class="row-between">
+      <div class="ark-nr" id="ark-nr"></div>
+      <button class="icon-btn dark" id="ark-zamknij" aria-label="Zamknij">✕</button>
+    </div>
+    <div id="ark-tresc"></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<!-- WYDRUK (widoczny tylko przy drukowaniu) -->
+<div id="druk"></div>
+
+<script src="config.js?v=1"></script>
+<script src="vendor/supabase.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

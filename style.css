@@ -1,0 +1,186 @@
+/* RM NIERUCHOMOŚCI, Zakupy, style (baza jak w Kluczach RM) */
+
+:root {
+  --brand: #094d47;
+  --brand-light: #0f6a62;
+  --brand-soft: #eef2f1;
+  --bg: #f5f5f4;
+  --card: #ffffff;
+  --text: #1c1917;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --ok: #15803d;
+  --ok-soft: #e7f5ec;
+  --out: #c2410c;
+  --out-soft: #fff1e6;
+  --late: #dc2626;
+  --late-soft: #fdecec;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px; background: var(--bg); color: var(--text); line-height: 1.45; min-height: 100vh;
+}
+.app { max-width: 760px; margin: 0 auto; padding-bottom: 60px; }
+
+header {
+  background: var(--brand); color: #fff;
+  padding-top: max(14px, env(safe-area-inset-top, 14px)); padding-bottom: 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 16px)); padding-right: max(16px, env(safe-area-inset-right, 16px));
+  position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.header-left, .header-right { display: flex; align-items: center; gap: 10px; }
+.header-logo { height: 30px; width: auto; }
+.subtitle { font-size: 15px; font-weight: 600; }
+.wersja { font-size: 11px; background: rgba(255,255,255,.18); padding: 2px 8px; border-radius: 10px; }
+.icon-btn { background: none; border: 0; color: #fff; font-size: 22px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+.icon-btn.dark { color: var(--muted); font-size: 22px; }
+.icon-btn.small-txt { font-size: 13px; opacity: .85; }
+.banner { background: #fef3c7; color: #78350f; padding: 8px 16px; font-size: 13px; }
+
+.tabs { display: flex; gap: 6px; padding: 10px 12px; background: var(--bg); position: sticky; top: 58px; z-index: 15; }
+.tabs button { flex: 1; border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 10px 4px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.tabs button.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.tab-ile:not(:empty) { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 2px; border-radius: 10px; background: var(--out); color: #fff; font-size: 12px; line-height: 20px; }
+
+.screen { padding: 0 12px; }
+.card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 14px; margin: 0 0 12px; }
+.card-title { font-weight: 700; font-size: 17px; margin-bottom: 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.err { color: var(--late); font-size: 14px; margin-top: 8px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+input[type=text], input[type=email], input[type=password], input[type=date], select {
+  display: block; width: 100%; margin-top: 4px; padding: 11px 12px; font-size: 16px; font-family: inherit;
+  border: 1px solid var(--border); border-radius: 10px; background: #fff; color: var(--text);
+}
+input:focus, select:focus { outline: 2px solid var(--brand-light); outline-offset: -1px; border-color: transparent; }
+
+.btn { display: block; width: 100%; border: 0; border-radius: 12px; padding: 12px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 8px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn-main { background: var(--brand); color: #fff; }
+.btn-ghost { background: var(--brand-soft); color: var(--brand); }
+.btn-big { padding: 16px; font-size: 18px; }
+.link { background: none; border: 0; color: var(--brand); font-size: 14px; cursor: pointer; text-decoration: underline; padding: 0; font-family: inherit; }
+.link.czerwony { color: var(--late); font-weight: 700; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; align-items: center; }
+.chip { border: 1px solid var(--border); background: #fff; border-radius: 18px; padding: 8px 14px; font-size: 15px; cursor: pointer; font-family: inherit; color: var(--text); }
+.chip.on { background: var(--brand); color: #fff; border-color: var(--brand); }
+.chip-mala { padding: 5px 11px; font-size: 13px; }
+.chips-sep { width: 100%; height: 0; }
+
+.sekcja-tytul { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 16px 0 6px; }
+.sekcja-tytul .muted { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--out); }
+.pusto { text-align: center; color: var(--muted); padding: 30px 10px; }
+
+/* SPRAWDZAMY */
+.info { background: var(--card); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--shadow); font-size: 15px; }
+.info.sroda { background: var(--brand-soft); border: 1px solid #cfdcda; }
+.dodaj { padding: 12px; }
+.dodaj-wiersz { display: flex; gap: 8px; }
+.dodaj-wiersz input { margin: 0; flex: 1; min-width: 0; }
+.dodaj-wiersz .btn { width: auto; margin: 0; padding: 0 18px; }
+.dodaj .chips { margin: 10px 0 0; }
+
+.poz { display: flex; align-items: center; gap: 8px; background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 8px 8px 8px 10px; margin-bottom: 6px; }
+.poz.trzeba { background: var(--out-soft); box-shadow: inset 0 0 0 1px #fdba74; }
+.ptaszek { flex: none; width: 30px; height: 30px; border-radius: 8px; border: 2px solid #d6d3d1; background: #fff; color: #fff; font-size: 18px; font-weight: 800; cursor: pointer; padding: 0; line-height: 1; }
+.poz.trzeba .ptaszek { background: var(--out); border-color: var(--out); }
+.poz-nazwa { flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 6px 0; font: inherit; font-weight: 600; color: var(--text); cursor: pointer; overflow-wrap: anywhere; }
+.poz-uwagi { display: block; font-size: 12px; font-weight: 400; color: var(--muted); }
+.znaczek { font-size: 11px; font-weight: 600; color: var(--brand); background: var(--brand-soft); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+.licznik { flex: none; display: flex; align-items: center; border: 1px solid var(--border); border-radius: 10px; background: #fff; overflow: hidden; }
+.licznik button { width: 34px; height: 34px; border: 0; background: none; font-size: 20px; cursor: pointer; color: var(--brand); font-family: inherit; }
+.licznik span { min-width: 48px; text-align: center; font-weight: 700; font-size: 15px; }
+.licznik small { font-weight: 400; color: var(--muted); font-size: 11px; }
+.poz:not(.trzeba) .licznik { opacity: .5; }
+.kropki { flex: none; width: 30px; height: 34px; border: 0; background: none; font-size: 20px; color: var(--muted); cursor: pointer; }
+
+.pasek-dol { position: sticky; bottom: 0; background: var(--bg); padding: 10px 0 max(12px, env(safe-area-inset-bottom, 12px)); margin-top: 10px; border-top: 1px solid var(--border); z-index: 10; }
+.pasek-info { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 2px; }
+.pasek-przyciski { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pasek-przyciski .btn { margin-top: 4px; }
+
+/* DO KUPIENIA */
+.postep b { font-size: 17px; }
+.pasek { height: 8px; background: var(--border); border-radius: 4px; margin-top: 10px; overflow: hidden; }
+.pasek i { display: block; height: 100%; background: var(--ok); transition: width .25s; }
+.odhacz { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--card); border: 0; border-radius: 12px; box-shadow: var(--shadow); padding: 14px 12px; margin-bottom: 6px; cursor: pointer; font: inherit; color: var(--text); }
+.kratka { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #d6d3d1; display: grid; place-items: center; color: #fff; font-weight: 800; }
+.odhacz-nazwa { flex: 1; min-width: 0; font-weight: 600; font-size: 17px; overflow-wrap: anywhere; }
+.odhacz-ile { flex: none; font-weight: 700; color: var(--brand); }
+.odhacz.kupione { background: var(--ok-soft); }
+.odhacz.kupione .kratka { background: var(--ok); border-color: var(--ok); }
+.odhacz.kupione .odhacz-nazwa { text-decoration: line-through; color: var(--muted); }
+.odhacz.kupione .odhacz-ile { color: var(--muted); }
+.koniec { margin-top: 16px; border: 2px solid var(--brand); }
+.stan-box { border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; font-size: 14px; }
+.stan-box.uwaga { background: var(--out-soft); color: #7c2d12; }
+
+/* ARCHIWUM */
+.kafle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 4px; }
+.kafel { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 10px 8px; text-align: center; }
+.kafel b { display: block; font-size: 17px; color: var(--brand); }
+.kafel span { font-size: 12px; color: var(--muted); }
+.arch { padding: 12px 14px; margin-bottom: 8px; }
+.arch-kwota { font-weight: 800; font-size: 18px; color: var(--brand); }
+.arch details { margin-top: 6px; }
+.arch summary { font-size: 14px; color: var(--brand); cursor: pointer; }
+.arch-poz { margin: 6px 0 0; padding-left: 18px; font-size: 14px; }
+.akcje-dol { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+
+/* ARKUSZ */
+.tlo { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 40; }
+.arkusz {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 41; background: var(--card);
+  border-radius: 18px 18px 0 0; max-height: 90vh; overflow-y: auto; max-width: 640px; margin: 0 auto;
+  padding: 8px max(16px, env(safe-area-inset-right, 16px)) max(20px, env(safe-area-inset-bottom, 20px)) max(16px, env(safe-area-inset-left, 16px));
+  box-shadow: 0 -8px 30px rgba(0,0,0,.2);
+}
+.arkusz-uchwyt { width: 40px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 8px; }
+.ark-nr { font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.ark-nazwa { font-size: 22px; font-weight: 800; margin: 2px 0 10px; }
+.potwierdz { background: var(--late-soft); border-radius: 12px; padding: 12px; margin-top: 12px; font-size: 14px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: max(90px, calc(env(safe-area-inset-bottom, 0px) + 90px)); transform: translateX(-50%);
+  background: #1c1917; color: #fff; padding: 10px 18px; border-radius: 22px; font-size: 15px; z-index: 60;
+  max-width: 90vw; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+
+/* WYDRUK: A4, czarno-biało, kratki do odhaczania długopisem */
+#druk { display: none; }
+@media print {
+  @page { size: A4; margin: 14mm 16mm; }
+  body { background: #fff; }
+  .app { display: none !important; }
+  #druk { display: block; color: #000; font-size: 13pt; }
+  .druk-glowa { display: flex; align-items: center; gap: 14px; border-bottom: 2px solid #094d47; padding-bottom: 8px; margin-bottom: 6px; }
+  .druk-glowa img { height: 34px; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #094d47; padding: 4px 8px; border-radius: 4px; }
+  .druk-glowa h1 { margin: 0; font-size: 20pt; }
+  #druk h2 { font-size: 11pt; text-transform: uppercase; letter-spacing: .05em; margin: 14px 0 4px; color: #444; }
+  #druk table { width: 100%; border-collapse: collapse; }
+  #druk td { border-bottom: 1px solid #ccc; padding: 6px 4px; vertical-align: middle; }
+  #druk td.kw { width: 28px; font-size: 16pt; line-height: 1; }
+  #druk td.il { width: 110px; text-align: right; font-weight: 700; }
+  #druk td.linia { height: 30px; }
+  #druk tr { break-inside: avoid; }
+  .druk-stopka { margin-top: 22px; font-size: 12pt; }
+  .druk-nota { margin-top: 8px; font-size: 9pt; color: #666; }
+}
+
+@media (max-width: 380px) {
+  .tabs button { font-size: 13px; }
+  .licznik span { min-width: 40px; }
+  .licznik button { width: 30px; }
+}

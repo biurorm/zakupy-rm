@@ -1,0 +1,17 @@
+{
+  "name": "Zakupy, RM Nieruchomości",
+  "short_name": "Zakupy RM",
+  "description": "Środowe zakupy biura: stała lista, ile kupić, wydruk, odhaczanie w sklepie, archiwum z kwotą",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f5f4",
+  "theme_color": "#094d47",
+  "lang": "pl",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
